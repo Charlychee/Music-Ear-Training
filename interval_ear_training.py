@@ -5,15 +5,17 @@ from enum import StrEnum, Enum
 from typing import Sequence
 from dataclasses import dataclass
 
+# Config
+MAX_ROUNDS = 10
+TIME_LIMIT = 5  # in seconds
+DURATION = 1  # in seconds
+
 # Constants
 TITLE = "Interval Ear Training"
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 FONT_SIZE = 32
 MARGIN = FONT_SIZE/2
-MAX_ROUNDS = 10
 FPS = 60
-TIME_LIMIT = 5  # in seconds
-DURATION = 1  # in seconds
 
 TIME_LIMIT = int(TIME_LIMIT*1000)  # to milliseconds
 DURATION = int(DURATION*1000)  # to milliseconds
