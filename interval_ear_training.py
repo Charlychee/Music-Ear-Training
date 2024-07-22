@@ -5,10 +5,19 @@ from enum import StrEnum, Enum
 from typing import Sequence
 from dataclasses import dataclass
 
+class IntervalType:
+    MELODIC = "melodic"
+    HARMONIC = "harmonic"
+    MIXED = "mixed"
+
 # Config
 MAX_ROUNDS = 10
 TIME_LIMIT = 5  # in seconds
 DURATION = 1  # in seconds
+INTERVAL_TYPE = IntervalType.MIXED
+RANDOMIZE_TIMBRE = False
+INSTRUMENTS = [0, 8, 11, 12, 16, 19, 24, 25, 40, 45, 46,
+               48, 52, 56, 57, 60, 68, 71, 75, 81, 85, 88, 108, 114, ]
 
 # Constants
 TITLE = "Interval Ear Training"
@@ -69,9 +78,11 @@ image_rect.centerx = SCREEN_WIDTH // 2
 midi_out = pygame.midi.Output(0)
 midi_out.set_instrument(0)  # Set to acoustic grand piano
 
+
 def clear_event_buffer():
     for _ in pygame.event.get():
         pass
+
 
 def play_midi_notes(notes: Sequence[Note], duration=1000):
     [midi_out.note_on(note.value, 127) for note in notes]
@@ -95,11 +106,16 @@ def play_harmonic_interval(interval: Interval):
     clear_event_buffer()
     play_midi_notes([interval.note1, interval.note2], duration=DURATION)
 
+PLAYER = {IntervalType.HARMONIC: [play_harmonic_interval],
+          IntervalType.MELODIC: [play_melodic_interval],
+          IntervalType.MIXED: [play_harmonic_interval, play_melodic_interval]}
 
 def play_interval() -> GameState:
     global current_interval, state_message, guess_start_time
+    if RANDOMIZE_TIMBRE:
+        midi_out.set_instrument(random.choice(INSTRUMENTS))
     current_interval = get_random_interval()
-    player = random.choice([play_harmonic_interval, play_melodic_interval])
+    player = random.choice(PLAYER[INTERVAL_TYPE])
     player(current_interval)
 
     state_message = "Guess the interval!"
